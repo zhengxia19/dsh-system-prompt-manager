@@ -1,0 +1,4 @@
+# DSH plugin bundle, modeled on the official plugin catalog patch form.
+- insert:
+    - id: dsh-system-prompt-manager
+      name: dsh-system-prompt-manager
