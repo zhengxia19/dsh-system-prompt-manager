@@ -10,6 +10,21 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - name: Checkout pinned official DSH SDK contract
+        uses: actions/checkout@v4
+        with:
+          repository: deepseek-ai/deepseek-harness
+          ref: dsh-v0.2.1-rc.2
+          path: .upstream
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            packages/core/system-prompt/src/index.ts
+            packages/core/agent/src/index.ts
+            packages/core/agent/src/dispatch.ts
+            packages/core/agent-loop/src/runtime-context.ts
+            packages/llm/llm-pi-ai/src/context.ts
+            packages/llm/llm-deepseek/src/serialize.ts
+            packages/client/ui-conversation/src/client/contract/slots.ts
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
