@@ -5,8 +5,8 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { apply } from '../lib/index.js'
 
-function harness() {
-  const directory = mkdtempSync(path.join(tmpdir(), 'spm-test-'))
+function harness(existingDirectory) {
+  const directory = existingDirectory || mkdtempSync(path.join(tmpdir(), 'spm-test-'))
   const before = process.env.DSH_HOME
   process.env.DSH_HOME = directory
   const listeners = new Map()
@@ -76,7 +76,7 @@ function harness() {
     close() {
       dispose()
       for (const fn of cleanup) fn()
-      rmSync(directory, { recursive: true, force: true })
+      if (!existingDirectory) rmSync(directory, { recursive: true, force: true })
       if (before === undefined) delete process.env.DSH_HOME
       else process.env.DSH_HOME = before
     },
@@ -171,4 +171,23 @@ test('corrupt persisted data stops plugin load instead of resetting choices', ()
     if (before === undefined) delete process.env.DSH_HOME
     else process.env.DSH_HOME = before
   }
+})
+
+test('persisted session choice and templates survive host restart', async () => {
+  const directory = mkdtempSync(path.join(tmpdir(), 'spm-restart-'))
+  try {
+    const first = harness(directory)
+    try {
+      first.agent('persisted')
+      const tpl = (await first.request('template', { name: '保存', text: '内容' })).body.template
+      await first.request('mode', { sessionId: 'persisted', mode: 'custom', templateId: tpl.id })
+    } finally { first.close() }
+    const second = harness(directory)
+    try {
+      const resumed = second.agent('persisted')
+      assert.equal(resumed.sections[0].text(), '内容')
+      assert.equal(resumed.sections[0].complete, true)
+      assert.equal(second.state().templates.length, 1)
+    } finally { second.close() }
+  } finally { rmSync(directory, { recursive: true, force: true }) }
 })
