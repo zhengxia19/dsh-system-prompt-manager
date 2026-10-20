@@ -29,3 +29,30 @@ jobs:
         run: |
           dsh --profile spm-smoke --dump-config > "$RUNNER_TEMP/dsh-layer.txt"
           grep -F 'dsh-system-prompt-manager' "$RUNNER_TEMP/dsh-layer.txt"
+
+  windows-install:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      DSH_HOME: C:\dsh-spm-smoke-home
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.28.5'
+      - name: Install official DSH CLI
+        run: npm install --global @deepseek-ai/dsh@0.2.1-rc.2
+      - name: Add bundle to isolated Windows profile
+        shell: pwsh
+        run: dsh plugin --profile spm-smoke-win add "$env:GITHUB_WORKSPACE"
+      - name: Check composed Windows profile
+        shell: pwsh
+        run: |
+          $config = dsh --profile spm-smoke-win --dump-config
+          if (($config | Out-String) -notmatch 'dsh-system-prompt-manager') { throw 'Plugin not found in composed profile' }
+          Write-Host 'Windows DSH CLI plugin bundle smoke succeeded'
