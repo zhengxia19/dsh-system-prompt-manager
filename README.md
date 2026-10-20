@@ -1,44 +1,67 @@
 # DSH System Prompt Manager
 
-DeepSeek Harness Desktop 系统提示词管理插件——**设计阶段**。
+DeepSeek Harness Desktop 的**会话级系统提示词控制插件**，支持原生、自定义完整替换、无系统提示词三种模式。
 
-> 状态：V1.0 需求冻结；尚无插件源码、构建产物或实机验证。
-> 目标版本：DSH Desktop `0.2.1-rc.2`（实际接口兼容性待核验）。
+> 开发状态：源码与自动化测试已建立；Windows DSH Desktop v0.2.1-rc.2 实机兼容和最终模型 API 请求验收尚未完成。不要将 CI 通过理解为插件已在桌面端完整验收。
 
-## 目标
+## 三种模式
 
-每次发送任务前，在输入框选择：
+| 模式 | 实际语义 |
+|---|---|
+| 原生 | 不注册额外完整提示词段，由 DSH 生成默认系统提示词 |
+| 自定义 | 选一个 UTF-8 模板，经 Agent 作用域 complete 段完整替换原生文本，且不插值 |
+| 无提示词 | Agent 产生空提示词；pi-ai/DeepSeek 适配器将其从 wire 省略（最终仍须通过真实请求验证） |
 
-1. **原生**：使用 DSH 默认系统提示词，插件不追加、不替换。
-2. **自定义**：选择已保存模板，完整替换 DSH 原生系统提示词，禁止任何自动前缀或后缀。
-3. **无系统提示词**：模型请求中不包含 `system` 角色消息；不能以空字符串、隐藏显示或提示词覆盖冒充。
+切换在下一轮生效；运行中的任务保持之前快照，子 Agent 继承主任务当前执行快照。旧会话历史可能继续影响生成效果。模板与会话选择存于 `$DSH_HOME/dsh-system-prompt-manager/state.json`，默认位置为用户主目录的 `.dsh` 下。
 
-系统提示词控制不改变模型、Control Vector、工具 Schema、权限或一般运行时数据。不得保证模型在无系统提示词时不存在其他影响行为的上下文。
+## 安装（待 Windows Desktop 验证）
 
-## 已确认的产品决策
+DSH Desktop → Plugins → Add plugin → Install a third-party plugin，在包地址中输入：
 
-- 输入框常驻模式选择器；自定义模式显示模板选择器。
-- 每会话独立保存，重启恢复；新会话使用可配置默认模式，初始为原生。
-- 允许在有历史的会话切换，下一轮模型请求生效，提示旧历史仍可影响回答；不修改进行中的请求。
-- 子 Agent 继承主 Agent 在本次任务发送时冻结的模式、模板内容和版本标识；运行中的子 Agent 不受之后切换影响。
-- 支持普通聊天、`/goal` 模式和多级子 Agent，实际兼容性需在开发阶段验证。
-- 遇到冲突或不支持的功能时，必须显式报错，不静默降级。
+```text
+https://github.com/zhengxia19/dsh-system-prompt-manager.git
+```
 
-## 文档导航
+官方插件管理器说明支持 Git 仓库、npm 包、tarball 和本地路径。安装后启用插件，在会话输入框左侧查找“系统提示词”控件。**实际运行验证未完成前请勿将此步骤当作已测试安装流程。**
 
-- [设计方案](docs/设计方案-V1.0.md)
+本地仅构建/校验：
+
+```bash
+npm run check
+npm pack --dry-run
+npm pack
+```
+
+不依赖额外 npm 运行时包；与 DSH 的对接通过 `package.json` 的 `dsh.bundle` 与 `dsh.client` 字段完成。
+
+## 功能
+
+- 会话级切换，重启后恢复，新的会话默认使用原生模式（可配置）。
+- 多模板新建、编辑、重命名、复制、删除、导入和 JSON 导出。
+- 原文保留包括换行、空格及 `{{...}}` 等字面内容。
+- 子 Agent 继承任务启动时的完整文本快照，运行中切换延后处理。
+- 冲突导致官方 complete 组装失败时阻止模型请求，不静默降级。
+- 状态和组装诊断接口；不直接向诊断结果返回模板全文。
+
+## 已知限制与验证状态
+
+- 源码级兼容分析基于官方 `dsh-v0.2.1-rc.2`，详见 [T01 核查记录](docs/T01-技术可行性核查记录.md)。
+- CI 覆盖 Node 22 语法、独立状态/Mock Agent 测试、npm 打包与官方源码接口断言；不包含真实 DSH Desktop 的图形界面或网络请求。
+- 与任意第三方 Provider 适配器的“完全无 system”兼容性不可推定，需要分别抓包确认。
+- 历史会话中存在旧系统消息和其他运行时数据时，本插件不修改历史。
+
+## 文档
+
+- [V1.0 设计方案](docs/设计方案-V1.0.md)
 - [功能清单](docs/功能清单-V1.0.md)
-- [实施任务清单](docs/实施任务清单-V1.0.md)
+- [任务状态](docs/实施任务清单-V1.0.md)
 - [验收标准](docs/验收标准-V1.0.md)
-- [技术可行性与风险](docs/技术可行性与风险.md)
+- [技术风险](docs/技术可行性与风险.md)
+- [T01 源码级证据](docs/T01-技术可行性核查记录.md)
 - [变更记录](CHANGELOG.md)
-- [协作指引](AGENTS.md)
-
-## 工程原则
-
-开发前先验证 DSH 目标版本的公开接口、请求构造链路、插件挂载位置及子 Agent 传递机制。`complete: true` 可作为完整替换的候选技术路线，但其可用范围、冲突行为必须以目标版本实际源码/测试为准。完全无系统消息是独立技术门槛；若插件 API 不能实现，不得擅自改 DSH 核心或降低验收要求。
+- [协作规范](AGENTS.md)
 
 ## 相关项目
 
-- https://github.com/lw-storm/dsh-plugin-masterprompt （UI 与会话状态参考，非依赖）
-- https://github.com/BOWLUNA/dsh-custom-mode （自定义 Agent 模式参考）
+- [DSH 官方仓库](https://github.com/deepseek-ai/deepseek-harness)
+- [dsh-plugin-masterprompt](https://github.com/lw-storm/dsh-plugin-masterprompt)（参考 UI/HTTP 交互，非运行时依赖）
