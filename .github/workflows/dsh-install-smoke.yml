@@ -1,0 +1,27 @@
+name: DSH bundle install smoke
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      DSH_HOME: ${{ runner.temp }}/dsh-smoke-home
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+      - name: Install matching official DSH CLI
+        run: npm install --global @deepseek-ai/dsh@0.2.1-rc.2
+      - name: Add this bundle to a fresh profile
+        run: dsh plugin --profile spm-smoke add "$GITHUB_WORKSPACE"
+      - name: Validate composed layer
+        shell: bash
+        run: |
+          dsh --profile spm-smoke --dump-config > "$RUNNER_TEMP/dsh-layer.txt"
+          grep -F 'dsh-system-prompt-manager' "$RUNNER_TEMP/dsh-layer.txt"
