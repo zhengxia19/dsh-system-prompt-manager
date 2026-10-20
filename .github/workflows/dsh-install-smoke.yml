@@ -10,7 +10,7 @@ jobs:
     permissions:
       contents: read
     env:
-      DSH_HOME: ${{ runner.temp }}/dsh-smoke-home
+      DSH_HOME: /tmp/dsh-spm-smoke-home
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
