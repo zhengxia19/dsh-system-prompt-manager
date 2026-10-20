@@ -185,8 +185,10 @@ window.__ModuleLoader__.load({
             h('button', { onClick: function () { editor[1](null) } }, '取消'))) : null,
         h('div', { className: 'spm-row' },
           h('button', { disabled: busy[0], onClick: function () {
-            action(api('diagnose?sid=' + encodeURIComponent(sid)).then(function (x) { return x }))
-          } }, '刷新状态'),
+            action(api('diagnose?sid=' + encodeURIComponent(sid)), function (x) {
+              notice[1]('组装诊断：模式 ' + x.mode + '；系统段数量 ' + x.sectionsCount + '；插件专属段 ' + (x.sectionRegistered ? '有' : '无') + '。完整请求需另行验证。')
+            })
+          } }, '组装诊断'),
           h('button', { disabled: busy[0], onClick: reload }, '重新载入')),
         notice[0] ? h('div', { className: 'spm-muted' }, notice[0]) : null,
         error[0] ? h('div', { className: 'spm-error' }, error[0]) : null
