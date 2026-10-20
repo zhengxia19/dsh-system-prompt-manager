@@ -5,14 +5,24 @@
   "type": "module",
   "main": "lib/index.js",
   "license": "MIT",
-  "engines": {"node": ">=22"},
+  "engines": {
+    "node": ">=22",
+    "dsh": ">=0.2.1-rc.2 <0.2.2"
+  },
   "scripts": {
     "test": "node --test",
     "check": "node --check lib/index.js && node --check lib/state.js && node --check client/client.js && node --test"
   },
   "dsh": {
-    "bundle": {"patch": "./cordis.patch.yml"},
-    "client": {"inject": ["@deepseek-ai/dsh-client-runtime"], "platform": "web"}
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ],
+      "platform": "web"
+    }
   },
   "exports": {
     ".": "./lib/index.js",
@@ -20,6 +30,12 @@
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
-  "files": ["lib", "client", "cordis.patch.yml"],
-  "peerDependencies": {"@deepseek-ai/cordis": "^4.0.1"}
+  "files": [
+    "lib",
+    "client",
+    "cordis.patch.yml"
+  ],
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  }
 }
