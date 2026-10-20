@@ -20,6 +20,7 @@ function harness() {
     },
     effect(fn) { cleanup.push(fn()) },
     logger: { warn() {} },
+    agents: { list() { return [] } },
     webServer: { register({ path, handler }) {
       routes.set(path, handler)
       return () => routes.delete(path)
