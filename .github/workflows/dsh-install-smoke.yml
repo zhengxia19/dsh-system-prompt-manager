@@ -16,6 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.19.0'
+      - name: Install pnpm for official DSH profile manager
+        uses: pnpm/action-setup@v4
+        with:
+          version: '11.28.5'
       - name: Install matching official DSH CLI
         run: npm install --global @deepseek-ai/dsh@0.2.1-rc.2
       - name: Add this bundle to a fresh profile
