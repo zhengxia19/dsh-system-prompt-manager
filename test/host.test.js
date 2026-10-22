@@ -84,6 +84,31 @@ function harness(existingDirectory) {
   }
 }
 
+test('bundled presets appear in state and are copied only by explicit user action', async () => {
+  const h = harness()
+  try {
+    h.agent('preset-session')
+    const initial = await h.request('state?sid=preset-session', undefined, 'GET')
+    assert.equal(initial.code, 200)
+    assert.deepEqual(initial.body.presets.map(p => p.id),
+      ['codex-dsh', 'claude-dsh', 'opencode-dsh'])
+    assert.equal(initial.body.selection.mode, 'native')
+    assert.equal(initial.body.templates.length, 0)
+    assert.equal(h.state().templates.length, 0)
+    for (const preset of initial.body.presets) {
+      const copied = await h.request('template', { name: preset.name, text: preset.text })
+      assert.equal(copied.code, 200)
+      assert.equal(copied.body.template.text, preset.text)
+      await h.request('mode', { sessionId: 'preset-session', mode: 'custom',
+        templateId: copied.body.template.id })
+      assert.equal(h.state().templates.length > 0, true)
+    }
+    assert.equal(h.state().templates.length, 3)
+    const selected = await h.request('state?sid=preset-session', undefined, 'GET')
+    assert.equal(selected.body.selection.mode, 'custom')
+  } finally { h.close() }
+})
+
 test('native / custom exact replacement / empty override with session isolation', async () => {
   const h = harness()
   try {
