@@ -1,3 +1,10 @@
+## 2026-10-22 — 三套来源核查的 DSH 适配参考模板
+
+- 分别核查 Codex 官方基础提示词、Claude Code 提取仓库的真实提示词段，以及 OpenCode 当前开发分支源码，并记录来源与不兼容的工具约定。
+- 新增 Codex、Claude Code、OpenCode 三套独立可编辑的 DSH 适配参考模板；新增 UI 预览及“添加并使用”，不自动修改已有模板或默认模式。
+- 增加预置文件校验、Mock API 和模板复制切换测试；模板文本保留 `complete:true` 和 `interpolate:false` 的原样替换语义。
+- **Windows DSH Desktop 实机行为及模型效果对照尚未验收**，勿将本次源码修改理解为已实现原厂 Agent 的全部能力。
+
 # 变更记录
 
 ## 2026-10-20 — v0.1.0 源码及自动化构建
