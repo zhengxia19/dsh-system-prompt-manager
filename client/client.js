@@ -73,6 +73,15 @@ window.__ModuleLoader__.load({
             : '下一轮请求生效。旧对话历史仍可能影响输出。')
         })
       }
+      function installPreset(preset) {
+        return action(api('template', { name: preset.name, text: preset.text }).then(function (result) {
+          return api('mode', { sessionId: sid, mode: 'custom', templateId: result.template.id })
+        }), function (result) {
+          notice[1](result.pending
+            ? '参考模板已复制到模板库；当前任务结束后下一轮生效。'
+            : '参考模板已复制到模板库；下一轮生效。旧历史仍可能影响输出。')
+        })
+      }
       function saveTemplate() {
         var t = editor[0]
         return action(api('template', { id: t.id, name: t.name, text: t.text }), function () { editor[1](null) })
@@ -115,6 +124,7 @@ window.__ModuleLoader__.load({
       var selection = state?.selection || { mode: 'native', templateId: null }
       var mode = selection.mode
       var templates = state?.templates || []
+      var presets = state?.presets || []
       var activeTemplate = templates.find(function (t) { return t.id === selection.templateId })
       var currentLabel = mode === 'native' ? '原生' : mode === 'none' ? '无系统提示词' :
         '自定义 · ' + (activeTemplate?.name || '模板已丢失')
@@ -134,7 +144,19 @@ window.__ModuleLoader__.load({
           h('label', null, '选择模板'),
           h('select', { value: selection.templateId || '', disabled: busy[0],
             onChange: function (ev) { switchMode('custom', ev.target.value) } },
-          templates.map(function (t) { return h('option', { value: t.id, key: t.id }, t.name + ' · r' + t.revision) }))) : null,
+          h('div', { className: 'spm-muted' },
+          '三套参考模板按 Codex、Claude Code、OpenCode 公开源码重新编写，非原厂原文；复制后可以自行编辑。'),
+        presets.map(function (preset) {
+          return h('div', { className: 'spm-row', key: 'preset-' + preset.id },
+            h('span', { style: { flex: 1 }, title: preset.description },
+              preset.name),
+            h('button', { disabled: busy[0], onClick: function () {
+              editor[1]({ id: null, name: preset.name, text: preset.text })
+            } }, '预览/编辑'),
+            h('button', { disabled: busy[0], onClick: function () { installPreset(preset) } },
+              '添加并使用'))
+        }),
+        templates.map(function (t) { return h('option', { value: t.id, key: t.id }, t.name + ' · r' + t.revision) }))) : null,
         h('div', { className: 'spm-muted spm-warn' },
           '允许在历史会话切换，下一轮生效。此前对话中包含的旧系统指令或回答仍可能影响输出；如需干净隔离，请新建会话。'),
         state?.pending ? h('div', { className: 'spm-muted' }, '当前任务尚在运行，切换已排队。') : null,
