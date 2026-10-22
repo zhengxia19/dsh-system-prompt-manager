@@ -34,6 +34,20 @@ npm pack
 
 不依赖额外 npm 运行时包；与 DSH 的对接通过 `package.json` 的 `dsh.bundle` 与 `dsh.client` 字段完成。
 
+## 三套已核查来源的 DSH 适配参考模板
+
+插件提供三套**可选、可编辑的参考模板**（均为 DSH 适配改编，不是第三方工具的原版提示词）：
+
+| 内置参考模板 | 侧重点 | 文件 |
+|---|---|---|
+| Codex 风格 | 代码实施、AGENTS.md 规则、最小修改与验证 | [codex-dsh.txt](presets/codex-dsh.txt) |
+| Claude Code 风格 | 复杂任务、子 Agent 协调、任务连续实施和结果报告 | [claude-dsh.txt](presets/claude-dsh.txt) |
+| OpenCode 风格 | 高效日常开发、局部编辑、工具优先 | [opencode-dsh.txt](presets/opencode-dsh.txt) |
+
+使用：安装插件并进入某个会话 → 点击“系统提示词” → 在“参考模板（DSH 适配）”区域点击“预览/编辑”查看全文，或点击“添加并使用”建立独立的用户模板副本并切换到自定义模式。切换仅下一轮生效。**插件不会自动选中、覆盖或更新已有用户模板，也不会更改工具权限。**
+
+详细来源、适配删改与未完成的真实环境验收，参见 [提示词模板研究记录](docs/prompt-presets-research-2026-10-22.md)。源码与 Mock 检查不能证明三种风格具有原厂 Agent 的实际运行效果，也不能证明在 Windows Desktop 中已验收。
+
 ## 功能
 
 - 会话级切换，重启后恢复，新的会话默认使用原生模式（可配置）。
