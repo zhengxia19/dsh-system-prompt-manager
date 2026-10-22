@@ -1,0 +1,118 @@
+{
+  "status": "complete",
+  "testPrompt": "请只回复：WIRE_TEST_OK。不要调用工具。",
+  "runs": [
+    {
+      "mode": "native",
+      "sessionId": "session-3fd13331-dfac-454d-b11f-3bff813a20bc",
+      "requests": [
+        {
+          "filename": "native-1.request.json",
+          "url": "https://130.130.130.229/v1/chat/completions",
+          "capturedAt": "2026-10-22T01:09:30.404Z",
+          "sha256": "74abc4914bd28ff1c80efb89a7d76fc9cb4499132fb7186dace15275b691b6c4",
+          "bytes": 49237,
+          "model": "qwen3.8-flash-next-iq3_s",
+          "roles": [
+            "developer",
+            "user",
+            "user",
+            "user"
+          ],
+          "systemMessages": 1,
+          "hasSystemField": false,
+          "tools": 37,
+          "httpStatus": 200,
+          "responseId": null
+        },
+        {
+          "filename": "native-2.request.json",
+          "url": "https://130.130.130.229/v1/chat/completions",
+          "capturedAt": "2026-10-22T01:09:30.407Z",
+          "sha256": "bbc2ea9d8f2b1d6c05b4e60d990357d26b6f5bda78a089ffb1e866280ad5ae5d",
+          "bytes": 866,
+          "model": "qwen3.8-flash-next-iq3_s",
+          "roles": [
+            "developer",
+            "user"
+          ],
+          "systemMessages": 1,
+          "hasSystemField": false,
+          "tools": 0,
+          "httpStatus": 200,
+          "responseId": null
+        }
+      ],
+      "modeResult": {
+        "ok": true,
+        "mode": "native",
+        "pending": false
+      },
+      "turnEnd": {
+        "turn": 1,
+        "reason": {
+          "kind": "completed"
+        }
+      },
+      "finished": true
+    },
+    {
+      "mode": "none",
+      "sessionId": "session-f8d74da8-1a70-4f97-9ad7-6886521b5388",
+      "requests": [
+        {
+          "filename": "none-1.request.json",
+          "url": "https://130.130.130.229/v1/chat/completions",
+          "capturedAt": "2026-10-22T01:10:04.388Z",
+          "sha256": "4d6b3726ace2a7dd6a1437b03f98f304350accb992401529d9d53f39d83778b0",
+          "bytes": 41864,
+          "model": "qwen3.8-flash-next-iq3_s",
+          "roles": [
+            "user",
+            "user",
+            "user"
+          ],
+          "systemMessages": 0,
+          "hasSystemField": false,
+          "tools": 37,
+          "httpStatus": 200,
+          "responseId": null
+        },
+        {
+          "filename": "none-2.request.json",
+          "url": "https://130.130.130.229/v1/chat/completions",
+          "capturedAt": "2026-10-22T01:10:04.391Z",
+          "sha256": "bbc2ea9d8f2b1d6c05b4e60d990357d26b6f5bda78a089ffb1e866280ad5ae5d",
+          "bytes": 866,
+          "model": "qwen3.8-flash-next-iq3_s",
+          "roles": [
+            "developer",
+            "user"
+          ],
+          "systemMessages": 1,
+          "hasSystemField": false,
+          "tools": 0,
+          "httpStatus": 200,
+          "responseId": null
+        }
+      ],
+      "modeResult": {
+        "ok": true,
+        "mode": "none",
+        "pending": false
+      },
+      "turnEnd": {
+        "turn": 1,
+        "reason": {
+          "kind": "completed"
+        }
+      },
+      "finished": true
+    }
+  ],
+  "selection": {
+    "provider": "strata",
+    "model": "qwen3.8-flash-next-iq3_s",
+    "reasoningEffort": "medium"
+  }
+}

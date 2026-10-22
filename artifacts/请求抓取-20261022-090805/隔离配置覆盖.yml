@@ -1,0 +1,11 @@
+- id: webserver
+  config:
+    host: 127.0.0.1
+    port: 54387
+- id: web-runtime
+  config:
+    openBrowser: false
+    printUrl: false
+- insert:
+    - id: dsh-wire-probe
+      name: C:/Users/zx/AppData/Local/Temp/dsh-wire-probe.mjs
